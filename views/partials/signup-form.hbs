@@ -1,0 +1,88 @@
+<form id="signupForm">
+  <div class="col-6">
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="username"  placeholder="Name" name="username">
+      <label for="Name">Name</label>
+    <div id="usernameError" style="color:red; display:none;"></div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="email"  placeholder="email" name="email">
+      <label for="Email">Email</label>
+      <div id="emailError" style="color:red; display:none;"></div>
+    </div>
+  </div>
+ 
+  <div class="col-6">
+    <div class="form-floating mb-3">
+      <input type="password" class="form-control" id="password"  placeholder="password" name="password">
+      <label for="password">password</label>
+      <div id="passwordError" style="color:red; display:none;"></div>
+    </div>
+  </div>
+
+  <div class="col-6 d-grid">
+    <button class="btn btn-primary" type="submit">Submit</button>
+  </div>
+</form>
+   <script>
+document.getElementById('signupForm').addEventListener('submit', function(event) {
+  event.preventDefault();  // Prevent default form submission
+  document.getElementById('usernameError').style.display = 'none';
+  document.getElementById('emailError').style.display = 'none';
+  document.getElementById('passwordError').style.display = 'none';
+  const username = document.getElementById('username').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  // Initialize error flag
+  let isValid = true;
+  if(username.length < 0){
+    document.getElementById('usernameError').innerText = 'Please enter a username';
+    document.getElementById('usernameError').style.display = 'block';
+
+    isValid = false;
+  }
+
+  // Validate email (basic check for format)
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    document.getElementById('emailError').innerText = 'Please enter a valid email address.';
+    document.getElementById('emailError').style.display = 'block';
+    isValid = false;
+  }
+
+  // Validate password (must be at least 6 characters)
+  if (password.length < 5) {
+    document.getElementById('passwordError').innerText = 'Password must be at least 5 characters long.';
+    document.getElementById('passwordError').style.display = 'block';
+    isValid = false;
+  }
+if(isValid){
+  fetch('/signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      username : username,
+      email: email,
+      password: password,
+    }),
+  })
+  .then(response => response.json())
+  .then(data => {
+   if (data.message ='User registered successfully') {
+    alert(data.message); // Display the response message
+    window.location.href = '/login';
+  }
+   
+  })
+  .catch(error => {
+    console.error('Error during login:', error);
+    alert('An error occurred. Please try again.');
+  });
+}
+});
+
+  </script>
